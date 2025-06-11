@@ -1,0 +1,37 @@
+DEBUG - 2025-04-23 23:12:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-23 23:12:08 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+WARNING - 2025-04-23 23:12:19 --> [DEPRECATED] Function utf8_decode() is deprecated in APPPATH/Controllers/Relatorios.php on line 29.
+ 1 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Relatorios->index()
+ 2 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Relatorios))
+ 3 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/aluno/Área de trabalho/webserver/www/codeigniter4/public/index.php')
+WARNING - 2025-04-23 23:12:19 --> [DEPRECATED] Function utf8_decode() is deprecated in APPPATH/Controllers/Relatorios.php on line 50.
+ 1 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Relatorios->index()
+ 2 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Relatorios))
+ 3 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/aluno/Área de trabalho/webserver/www/codeigniter4/public/index.php')
+WARNING - 2025-04-23 23:12:19 --> [DEPRECATED] Function utf8_decode() is deprecated in APPPATH/Controllers/Relatorios.php on line 51.
+ 1 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Relatorios->index()
+ 2 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Relatorios))
+ 3 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH/index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ 7 SYSTEMPATH/rewrite.php(44): require_once('/home/aluno/Área de trabalho/webserver/www/codeigniter4/public/index.php')
+WARNING - 2025-04-23 23:12:19 --> [DEPRECATED] Function utf8_decode() is deprecated in APPPATH/Libraries/RelatorioPDF.php on line 21.
+ 1 APPPATH/Libraries/fpdf/fpdf.php(279): RelatorioPDF->Footer()
+ 2 APPPATH/Libraries/fpdf/fpdf.php(988): FPDF->Close()
+ 3 APPPATH/Controllers/Relatorios.php(55): FPDF->Output('I', 'RelatorioUsuarios.pdf')
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Relatorios->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Relatorios))
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH/index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+10 SYSTEMPATH/rewrite.php(44): require_once('/home/aluno/Área de trabalho/webserver/www/codeigniter4/public/index.php')
