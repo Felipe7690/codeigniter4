@@ -11,7 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -120,6 +119,26 @@ CREATE TABLE `usuarios` (
   `usuarios_senha` varchar(32) NOT NULL,
   `usuarios_data_cadastro` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `clientes` (
+  `clientes_id` INT NOT NULL,
+  `clientes_usuarios_id` INT NOT NULL,
+  `clientes_endereco` VARCHAR(255),
+  `clientes_cidade_id` INT,
+  PRIMARY KEY (`clientes_id`),
+  FOREIGN KEY (`clientes_usuarios_id`) REFERENCES `usuarios`(`usuarios_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`clientes_cidade_id`) REFERENCES `cidades`(`cidades_id`) ON DELETE SET NULL
+);
+
+CREATE TABLE `funcionarios` (
+  `funcionarios_id` INT NOT NULL,
+  `funcionarios_usuarios_id` INT NOT NULL,
+  `funcionarios_cargo` VARCHAR(255),
+  `funcionarios_salario` DECIMAL(10,2),
+  PRIMARY KEY (`funcionarios_id`),
+  FOREIGN KEY (`funcionarios_usuarios_id`) REFERENCES `usuarios`(`usuarios_id`) ON DELETE CASCADE
+);
+
 
 --
 -- Despejando dados para a tabela `usuarios`
