@@ -24,13 +24,15 @@ class ClientesController extends BaseController
             clientes.clientes_cidade_id,
             usuarios.usuarios_nome,
             usuarios.usuarios_email,
-            usuarios.usuarios_fone
+            usuarios.usuarios_fone,
+            cidades.cidades_nome
         ');
         $builder->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id');
+        $builder->join('cidades', 'cidades.cidades_id = clientes.clientes_cidade_id', 'left');
         $query = $builder->get();
-        $data['clientes'] = $query->getResult();
 
-        $data['title'] = 'Clientes';
+        $data['clientes'] = $query->getResult();
+        $data['title'] = 'Endereços de Clientes';
         $data['form'] = 'Listar';
 
         return view('clientes/index', $data);
@@ -40,19 +42,18 @@ class ClientesController extends BaseController
     {
         $usuariosModel = new Usuarios();
         $cidadesModel = new Cidades();
-        $clientesModel = new Clientes();
-    
+
         // Pega todos os usuários
         $usuarios = $usuariosModel->findAll();
-    
+
         // Filtra os usuários que ainda não são clientes
-        $usuariosSemCliente = array_filter($usuarios, function($usuario) use ($clientesModel) {
-            return !$clientesModel->where('clientes_usuarios_id', $usuario->usuarios_id)->first();
+        $usuariosSemCliente = array_filter($usuarios, function($usuario) {
+            return !$this->clientesModel->where('clientes_usuarios_id', $usuario->usuarios_id)->first();
         });
-    
+
         $data['usuarios'] = $usuariosSemCliente;
         $data['cidades'] = $cidadesModel->findAll();
-    
+
         $data['title'] = 'Cliente';
         $data['form'] = 'Criar';
         $data['op'] = 'store';
@@ -65,22 +66,19 @@ class ClientesController extends BaseController
             'clientes_endereco' => '',
             'clientes_cidade_id' => ''
         ];
-    
+
         return view('clientes/new', $data);
     }
-    
 
     public function store()
     {
-        $clientesModel = new Clientes();
-
         $dados = [
             'clientes_usuarios_id' => $this->request->getPost('clientes_usuarios_id'),
             'clientes_cidade_id' => $this->request->getPost('clientes_cidade_id'),
             'clientes_endereco' => $this->request->getPost('clientes_endereco'),
         ];
 
-        if ($clientesModel->insert($dados)) {
+        if ($this->clientesModel->insert($dados)) {
             return redirect()->to('/clientes')->with('success', 'Cliente criado com sucesso!');
         } else {
             return redirect()->back()->with('error', 'Erro ao criar cliente')->withInput();
@@ -133,5 +131,65 @@ class ClientesController extends BaseController
     {
         $this->clientesModel->delete($id);
         return redirect()->to(base_url('clientes'))->with('success', 'Cliente removido com sucesso!');
+    }
+
+    public function editarEndereco($id)
+    {
+        $model = new \App\Models\Clientes();
+        $cliente = $model->find($id);
+    
+        if (!$cliente) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Cliente não encontrado');
+        }
+    
+        $cidadesModel = new \App\Models\Cidades();
+        $cidades = $cidadesModel->findAll();
+    
+        $data = [
+            'title' => 'Endereço',
+            'form' => 'editar',
+            'cliente' => $cliente,
+            'cidades' => $cidades
+        ];
+    
+        return view('enderecos/form', $data);
+    }
+    
+    public function salvarEndereco($id)
+    {
+        $data = [
+            'clientes_endereco' => $this->request->getPost('clientes_endereco'),
+            'clientes_cidade_id' => $this->request->getPost('clientes_cidade_id'),
+        ];
+    
+        if ($this->clientesModel->update($id, $data)) {
+            return redirect()->to('/enderecos')->with('success', 'Endereço atualizado com sucesso.');
+        } else {
+            return redirect()->back()->with('error', 'Erro ao atualizar endereço')->withInput();
+        }
+    }
+    
+
+    public function enderecos()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
+        $builder->select('
+            clientes.clientes_id,
+            clientes.clientes_endereco,
+            clientes.clientes_cidade_id,
+            usuarios.usuarios_nome,
+            usuarios.usuarios_email,
+            usuarios.usuarios_fone,
+            cidades.cidades_nome
+        ');
+        $builder->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id');
+        $builder->join('cidades', 'cidades.cidades_id = clientes.clientes_cidade_id', 'left');
+        $query = $builder->get();
+
+        $data['clientes'] = $query->getResult();
+        $data['title'] = 'Endereços de Clientes';
+
+        return view('enderecos/index', $data);
     }
 }

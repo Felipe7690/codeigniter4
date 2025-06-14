@@ -88,6 +88,10 @@ $routes->get('clientes/edit/(:num)', 'ClientesController::edit/$1');
 $routes->post('clientes/update/(:num)', 'ClientesController::update/$1');
 $routes->post('clientes/delete/(:num)', 'ClientesController::delete/$1');
 
+$routes->get('clientes/editarEndereco/(:num)', 'ClientesController::editarEndereco/$1');
+$routes->post('clientes/salvarEndereco/(:num)', 'ClientesController::salvarEndereco/$1');
+$routes->get('enderecos', 'ClientesController::enderecos');
+
 
 
 
