@@ -74,6 +74,23 @@ $routes->get('/imgprodutos/delete/(:any)', 'Imgprodutos::delete/$1');
 $routes->get('/relatorios', 'Relatorios::index');
 $routes->get('/relatorios/index', 'Relatorios::index');
 
+$routes->get('vendas', 'Venda::index');
+$routes->get('vendas/(:num)', 'Venda::show/$1');
+$routes->post('vendas', 'Venda::create');
+$routes->put('vendas/(:num)', 'Venda::update/$1');
+$routes->delete('vendas/(:num)', 'Venda::delete/$1');
+$routes->get('venda/edit/(:num)', 'Venda::edit/$1');
+
+$routes->get('clientes', 'ClientesController::index');
+$routes->get('clientes/create', 'ClientesController::create');
+$routes->post('clientes/store', 'ClientesController::store');
+$routes->get('clientes/edit/(:num)', 'ClientesController::edit/$1');
+$routes->post('clientes/update/(:num)', 'ClientesController::update/$1');
+$routes->post('clientes/delete/(:num)', 'ClientesController::delete/$1');
+
+
+
+
 
 
 
