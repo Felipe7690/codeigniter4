@@ -1,6 +1,6 @@
 <?php
-    helper('functions');
-    session();
+helper('functions');
+session();
 ?>
 
 <?= $this->extend('Templates_admin') ?>
@@ -10,10 +10,18 @@
 
     <h2 class="border-bottom border-2 border-primary mt-5 pt-3 mb-4"> <?= $title ?> </h2>
 
-    <?php if(isset($msg)){ echo $msg; } ?>
+    <?php if (isset($msg)) { 
+        echo $msg; 
+    } ?>
 
     <form action="<?= base_url('clientes/search'); ?>" class="d-flex" role="search" method="post">
-        <input class="form-control me-2" name="pesquisar" type="search" placeholder="Pesquisar" aria-label="Search">
+        <input 
+            class="form-control me-2" 
+            name="pesquisar" 
+            type="search" 
+            placeholder="Pesquisar" 
+            aria-label="Search"
+        >
         <button class="btn btn-outline-success" type="submit">
             <i class="bi bi-search"></i>
         </button>
@@ -36,7 +44,6 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-
             <?php foreach ($clientes as $cliente): ?>
                 <tr>
                     <th scope="row"><?= esc($cliente->clientes_id) ?></th>
@@ -49,7 +56,12 @@
                             Editar
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <form action="<?= base_url('clientes/delete/' . $cliente->clientes_id); ?>" method="post" style="display:inline;" onsubmit="return confirm('Confirma a exclusão deste cliente?')">
+                        <form 
+                            action="<?= base_url('clientes/delete/' . $cliente->clientes_id); ?>" 
+                            method="post" 
+                            style="display:inline;" 
+                            onsubmit="return confirm('Confirma a exclusão deste cliente?')"
+                        >
                             <button type="submit" class="btn btn-danger">
                                 Excluir
                                 <i class="bi bi-x-circle"></i>
@@ -58,7 +70,6 @@
                     </td>
                 </tr>
             <?php endforeach; ?>
-
         </tbody>
     </table>
 

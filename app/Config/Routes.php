@@ -87,10 +87,23 @@ $routes->post('clientes/store', 'ClientesController::store');
 $routes->get('clientes/edit/(:num)', 'ClientesController::edit/$1');
 $routes->post('clientes/update/(:num)', 'ClientesController::update/$1');
 $routes->post('clientes/delete/(:num)', 'ClientesController::delete/$1');
+$routes->post('clientes/search', 'ClientesController::search');
+$routes->post('clientes/search', 'ClientesController::search');          // pesquisa por nome
+$routes->post('clientes/searchEndereco', 'ClientesController::searchEndereco'); // pesquisa por endereço
+
 
 $routes->get('clientes/editarEndereco/(:num)', 'ClientesController::editarEndereco/$1');
 $routes->post('clientes/salvarEndereco/(:num)', 'ClientesController::salvarEndereco/$1');
 $routes->get('enderecos', 'ClientesController::enderecos');
+
+$routes->get('estoques', 'EstoquesController::index');
+$routes->get('estoques/create', 'EstoquesController::create');
+$routes->post('estoques/store', 'EstoquesController::store');
+$routes->get('estoques/edit/(:num)', 'EstoquesController::edit/$1');
+$routes->post('estoques/update/(:num)', 'EstoquesController::update/$1');
+$routes->get('estoques/delete/(:num)', 'EstoquesController::delete/$1');
+$routes->post('estoques/delete/(:num)', 'EstoquesController::delete/$1');
+$routes->post('estoques/search', 'EstoquesController::search');
 
 
 

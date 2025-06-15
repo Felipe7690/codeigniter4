@@ -14,7 +14,22 @@ session();
         <div class="alert alert-success"><?= session()->getFlashdata('msg') ?></div>
     <?php endif; ?>
 
-    <table class="table mt-4">
+    <form action="<?= base_url('clientes/searchEndereco'); ?>" method="post" class="d-flex mb-3" role="search">
+        <input
+            class="form-control me-2"
+            name="pesquisarEndereco"
+            type="search"
+            placeholder="Pesquisar cliente pelo endereço"
+            aria-label="Pesquisar"
+            value="<?= isset($pesquisarEndereco) ? esc($pesquisarEndereco) : '' ?>"
+            required
+        >
+        <button class="btn btn-outline-success" type="submit">
+            <i class="bi bi-search"></i>
+        </button>
+    </form>
+
+    <table class="table mt-2">
         <thead>
             <tr>
                 <th scope="col">ID</th>
@@ -43,7 +58,9 @@ session();
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="5" class="text-center">Nenhum endereço encontrado.</td>
+                    <td colspan="5" class="text-center">
+                        <?= isset($msg) ? esc($msg) : 'Nenhum endereço encontrado.' ?>
+                    </td>
                 </tr>
             <?php endif; ?>
 

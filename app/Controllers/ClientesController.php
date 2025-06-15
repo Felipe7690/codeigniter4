@@ -133,6 +133,62 @@ class ClientesController extends BaseController
         return redirect()->to(base_url('clientes'))->with('success', 'Cliente removido com sucesso!');
     }
 
+    public function search()
+    {
+        $pesquisa = $this->request->getPost('pesquisar');
+
+        $clientesModel = new Clientes();
+
+        $builder = $clientesModel->builder();
+
+        $builder->select('clientes.*, usuarios.usuarios_nome, usuarios.usuarios_email, usuarios.usuarios_fone');
+        $builder->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id');
+        $builder->like('usuarios.usuarios_nome', $pesquisa);
+
+        $clientes = $builder->get()->getResult();
+
+        $data = [
+            'title' => 'Clientes - Pesquisa',
+            'clientes' => $clientes,
+            'msg' => count($clientes) ? null : 'Nenhum cliente encontrado com esse nome.',
+        ];
+
+        return view('clientes/index', $data);
+    }
+
+    public function searchEndereco()
+    {
+        $pesquisa = $this->request->getPost('pesquisarEndereco');
+    
+        $db = \Config\Database::connect();
+        $builder = $db->table('clientes');
+    
+        $builder->select('
+            clientes.clientes_id,
+            usuarios.usuarios_nome,
+            clientes.clientes_endereco,
+            cidades.cidades_nome
+        ');
+        $builder->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id');
+        $builder->join('cidades', 'cidades.cidades_id = clientes.clientes_cidade_id', 'left');
+    
+        if (!empty($pesquisa)) {
+            $builder->like('clientes.clientes_endereco', $pesquisa);
+        }
+    
+        $clientes = $builder->get()->getResult();
+    
+        $data = [
+            'title' => 'Endereços - Pesquisa por Endereço',
+            'clientes' => $clientes,
+            'pesquisarEndereco' => $pesquisa,
+        ];
+    
+        return view('enderecos/index', $data);
+    }
+    
+    
+
     public function editarEndereco($id)
     {
         $model = new \App\Models\Clientes();
