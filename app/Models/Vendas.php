@@ -17,7 +17,23 @@ class Vendas extends Model
         'vendas_status'
     ];
 
-    protected $returnType = 'array';
+    public function getVendasComCliente()
+{
+    return $this->select('
+                        vendas.vendas_id, 
+                        vendas.vendas_data, 
+                        vendas.vendas_total, 
+                        vendas.vendas_status, 
+                        usuarios.usuarios_nome AS cliente_nome
+                    ')
+                 ->join('clientes', 'clientes.clientes_id = vendas.vendas_clientes_id')
+                 ->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id')
+                 ->orderBy('vendas.vendas_data', 'DESC')
+                 ->findAll();
+}
+
+    // CORREÇÃO: Alterado de 'array' para 'object'
+    protected $returnType = 'object';
 
     // Se quiser timestamps automáticos (created_at, updated_at), descomente e ajuste os nomes:
     // protected $useTimestamps = true;

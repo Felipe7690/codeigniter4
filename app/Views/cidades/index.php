@@ -3,9 +3,7 @@
     session();
     if(isset($_SESSION['login'])){
         $login = $_SESSION['login'];
-        print_r($login);
         if($login->usuarios_nivel == 1){
-    
 ?>
 <?= $this->extend('Templates_admin') ?>
 <?= $this->section('content') ?>
@@ -14,17 +12,17 @@
 
         <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= $title ?> </h2>
 
-        <?php if(isset($msg)){echo $msg;} ?>
+        <?php if(!empty($msg)){echo $msg;} ?>
 
         <form action="<?= base_url('cidades/search'); ?>" class="d-flex" role="search" method="post">
             <input class="form-control me-2" name="pesquisar" type="search"
-                placeholder="Pesquisar" aria-label="Search">
+                placeholder="Pesquisar por nome" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">
                 <i class="bi bi-search"></i>
             </button>
         </form>
 
-        <table class="table">
+        <table class="table mt-3">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
@@ -40,24 +38,23 @@
             </thead>
             <tbody class="table-group-divider">
                 
-                <!-- Aqui vai o laço de repetição -->
-                <?php for($i=0; $i < count($cidades); $i++){ ?>
+                <?php foreach ($cidades as $cidade): ?>
                     <tr>
-                        <th scope="row"><?= $cidades[$i]->cidades_id; ?></th>
-                        <td><?= $cidades[$i]->cidades_nome; ?></td>
-                        <td><?= $cidades[$i]->cidades_uf; ?></td>
+                        <th scope="row"><?= $cidade->cidades_id; ?></th>
+                        <td><?= esc($cidade->cidades_nome); ?></td>
+                        <td><?= esc($cidade->cidades_uf); ?></td>
                         <td>
-                            <a class="btn btn-primary"  href="<?= base_url('cidades/edit/'.$cidades[$i]->cidades_id); ?>">
+                            <a class="btn btn-primary"  href="<?= base_url('cidades/edit/'.$cidade->cidades_id); ?>">
                                 Editar
                                 <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a class="btn btn-danger"  href="<?= base_url('cidades/delete/'.$cidades[$i]->cidades_id); ?>">
+                            <a class="btn btn-danger"  href="<?= base_url('cidades/delete/'.$cidade->cidades_id); ?>">
                                 Excluir
                                 <i class="bi bi-x-circle"></i>
                             </a>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php endforeach; ?>
 
             </tbody>
         </table>
@@ -67,14 +64,9 @@
 
 <?php 
         }else{
-
-            $data['msg'] = msg("Sem permissão de acesso!","danger");
-            echo view('login',$data);
+            echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
         }
     }else{
-
-        $data['msg'] = msg("O usuário não está logado!","danger");
-        echo view('login',$data);
+        echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
     }
-
 ?>

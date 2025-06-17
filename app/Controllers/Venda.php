@@ -2,112 +2,80 @@
 
 namespace App\Controllers;
 
-use App\Models\Vendas;
-use CodeIgniter\RESTful\ResourceController;
+use App\Models\Vendas as Vendas_model;
+// Adicione os outros models que podem ser necessários
+use App\Models\Clientes as Clientes_model;
 
-class Venda extends ResourceController
+class Venda extends BaseController // Mudado para BaseController, mais adequado para web
 {
-    protected $modelName = Vendas::class;
-    protected $format = 'json';
+    private $vendasModel;
+    private $clientesModel;
 
-    // Listar vendas com nome do cliente
+    public function __construct()
+    {
+        $this->vendasModel = new Vendas_model();
+        $this->clientesModel = new Clientes_model();
+        helper('functions');
+    }
+
+    // Lista todas as vendas
     public function index()
     {
-        $db = \Config\Database::connect();
-        $builder = $db->table('vendas');
-
-        $builder->select('vendas.*, usuarios.usuarios_nome AS cliente_nome');
-        $builder->join('clientes', 'clientes.clientes_id = vendas.vendas_clientes_id');
-        $builder->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id');
-
-        $query = $builder->get();
-        $vendas = $query->getResult();
-
-        $data['vendas'] = $vendas;
-        $data['title'] = 'Vendas';
+        $data = [
+            'title'  => 'Lista de Vendas',
+            'vendas' => $this->vendasModel->getVendasComCliente(), // Usa a função do Model
+            'msg'    => session()->getFlashdata('msg')
+        ];
 
         return view('vendas/index', $data);
     }
 
-    // Mostrar uma venda específica
-    public function show($id = null)
-    {
-        $venda = $this->model->find($id);
-
-        if (!$venda) {
-            return $this->failNotFound('Venda não encontrada');
-        }
-
-        return $this->respond($venda);
-    }
-
-    // Exibe formulário (se necessário)
-    public function new()
-    {
-        // retornar uma view se você quiser exibir um formulário
-    }
-
-    // Criar nova venda
-    public function create()
-    {
-        $data = $this->request->getPost();
-        $this->model->insert($data);
-
-        return $this->respondCreated(['message' => 'Venda criada com sucesso']);
-    }
-
-    // Exibe formulário de edição (se necessário)
+    // Exibe o formulário para editar uma venda
     public function edit($id = null)
     {
-        $db = \Config\Database::connect();
-    
-        $venda = (object) $this->model->find($id);
-    
+        $venda = $this->vendasModel->find($id);
+
         if (!$venda) {
-            return redirect()->to('/venda')->with('error', 'Venda não encontrada');
+            return redirect()->to('/venda')->with('msg', msg('Venda não encontrada', 'danger'));
         }
-    
-        // Buscar clientes para popular o <select>
-        $clientes = $db->table('clientes')
-            ->join('usuarios', 'usuarios.usuarios_id = clientes.clientes_usuarios_id')
-            ->select('clientes.clientes_id, clientes.clientes_endereco, usuarios.usuarios_nome') // aqui inclui o campo clientes_endereco
-            ->get()
-            ->getResult();
+        
+        $data = [
+            'title'    => 'Editar Venda',
+            'venda'    => $venda,
+            'clientes' => $this->clientesModel->findComNomeUsuario() // Busca todos os clientes para o select
+        ];
 
-    
-        return view('vendas/edit', [
-            'venda' => $venda,
-            'clientes' => $clientes,
-        ]);
+        return view('vendas/edit', $data);
     }
-    
-    
 
-    // Atualizar venda existente
+    // Atualiza uma venda existente
     public function update($id = null)
     {
-        if ($id === null) {
-            $id = $this->request->getPost('vendas_id');
-        }
-    
-        $data = [
+        $dados = [
             'vendas_clientes_id' => $this->request->getPost('vendas_clientes_id'),
-            'vendas_data' => $this->request->getPost('vendas_data'),
-            'vendas_valor_total' => $this->request->getPost('vendas_valor_total'),
+            'vendas_data'        => $this->request->getPost('vendas_data'),
+            'vendas_status'      => $this->request->getPost('vendas_status'),
+            // Usando o nome correto da coluna: vendas_total
+            'vendas_total'       => $this->request->getPost('vendas_total'),
         ];
-    
-        if (!$this->model->update($id, $data)) {
-            return redirect()->back()->withInput()->with('errors', $this->model->errors());
-        }
-    
-        return redirect()->to('/venda')->with('success', 'Venda atualizada com sucesso!');
-    }
-    
 
-    // Deletar uma venda
+        if ($this->vendasModel->update($id, $dados)) {
+            session()->setFlashdata('msg', msg('Venda atualizada com sucesso!', 'success'));
+        } else {
+            session()->setFlashdata('msg', msg('Erro ao atualizar venda.', 'danger'));
+        }
+
+        return redirect()->to('/venda');
+    }
+
+    // Deleta uma venda
     public function delete($id = null)
     {
-        $this->model->delete($id);
-        return $this->respondDeleted(['message' => 'Venda excluída com sucesso']);
+        if ($this->vendasModel->delete($id)) {
+            session()->setFlashdata('msg', msg('Venda excluída com sucesso!', 'success'));
+        } else {
+            session()->setFlashdata('msg', msg('Erro ao excluir venda.', 'danger'));
+        }
+        return redirect()->to('/venda');
     }
 }

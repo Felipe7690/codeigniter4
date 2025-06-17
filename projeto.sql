@@ -3,13 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql:3306
--- Tempo de geração: 13/06/2025 às 21:14
+-- Tempo de geração: 17/06/2025 às 19:25
 -- Versão do servidor: 8.0.41
 -- Versão do PHP: 8.2.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -22,18 +23,21 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `categorias`
+--
 CREATE TABLE `categorias` (
   `categorias_id` int NOT NULL AUTO_INCREMENT,
   `categorias_nome` varchar(255) NOT NULL,
   PRIMARY KEY (`categorias_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `categorias` (`categorias_id`, `categorias_nome`) VALUES
-(1, 'Sanduíches2'),
-(2, 'Pizzas');
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `cidades`
+--
 CREATE TABLE `cidades` (
   `cidades_id` int NOT NULL AUTO_INCREMENT,
   `cidades_nome` varchar(255) NOT NULL,
@@ -41,11 +45,12 @@ CREATE TABLE `cidades` (
   PRIMARY KEY (`cidades_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `cidades` (`cidades_id`, `cidades_nome`, `cidades_uf`) VALUES
-(1, 'Ceres', 'GO');
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `usuarios`
+--
 CREATE TABLE `usuarios` (
   `usuarios_id` int NOT NULL AUTO_INCREMENT,
   `usuarios_nome` varchar(255) NOT NULL,
@@ -60,37 +65,43 @@ CREATE TABLE `usuarios` (
   PRIMARY KEY (`usuarios_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `usuarios` (`usuarios_id`, `usuarios_nome`, `usuarios_sobrenome`, `usuarios_email`, `usuarios_cpf`, `usuarios_data_nasc`, `usuarios_nivel`, `usuarios_fone`, `usuarios_senha`, `usuarios_data_cadastro`) VALUES
-(1, 'Vilson', 'Soares de Siqueira', 'vilsonsoares@gmail.com', '999.999.999-99', '1981-12-03', 1, '6398474-3380', 'e10adc3949ba59abbe56e057f20f883e', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `clientes`
+--
 CREATE TABLE `clientes` (
   `clientes_id` int NOT NULL AUTO_INCREMENT,
   `clientes_usuarios_id` int NOT NULL,
   `clientes_endereco` varchar(255) DEFAULT NULL,
   `clientes_cidade_id` int DEFAULT NULL,
   PRIMARY KEY (`clientes_id`),
-  KEY `clientes_usuarios_id` (`clientes_usuarios_id`),
-  KEY `clientes_cidade_id` (`clientes_cidade_id`),
-  CONSTRAINT `clientes_ibfk_1` FOREIGN KEY (`clientes_usuarios_id`) REFERENCES `usuarios` (`usuarios_id`) ON DELETE CASCADE,
-  CONSTRAINT `clientes_ibfk_2` FOREIGN KEY (`clientes_cidade_id`) REFERENCES `cidades` (`cidades_id`) ON DELETE SET NULL
+  FOREIGN KEY (`clientes_usuarios_id`) REFERENCES `usuarios` (`usuarios_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`clientes_cidade_id`) REFERENCES `cidades` (`cidades_id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `funcionarios`
+--
 CREATE TABLE `funcionarios` (
   `funcionarios_id` int NOT NULL AUTO_INCREMENT,
   `funcionarios_usuarios_id` int NOT NULL,
   `funcionarios_cargo` varchar(255) DEFAULT NULL,
   `funcionarios_salario` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`funcionarios_id`),
-  KEY `funcionarios_usuarios_id` (`funcionarios_usuarios_id`),
-  CONSTRAINT `funcionarios_ibfk_1` FOREIGN KEY (`funcionarios_usuarios_id`) REFERENCES `usuarios` (`usuarios_id`) ON DELETE CASCADE
+  FOREIGN KEY (`funcionarios_usuarios_id`) REFERENCES `usuarios` (`usuarios_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- --------------------------------------------------------
 
+--
+-- Estrutura para tabela `produtos`
+--
 CREATE TABLE `produtos` (
   `produtos_id` int NOT NULL AUTO_INCREMENT,
   `produtos_nome` varchar(255) NOT NULL,
@@ -99,50 +110,33 @@ CREATE TABLE `produtos` (
   `produtos_preco_venda` float(9,2) NOT NULL,
   `produtos_categorias_id` int NOT NULL,
   PRIMARY KEY (`produtos_id`),
-  KEY `fk_categorias_produto` (`produtos_categorias_id`),
-  CONSTRAINT `fk_categorias_produto` FOREIGN KEY (`produtos_categorias_id`) REFERENCES `categorias` (`categorias_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  FOREIGN KEY (`produtos_categorias_id`) REFERENCES `categorias` (`categorias_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `produtos` (`produtos_id`, `produtos_nome`, `produtos_descricao`, `produtos_preco_custo`, `produtos_preco_venda`, `produtos_categorias_id`) VALUES
-(1, 'Pizza Calabresa', 'Pizza Calabresa', 35.00, 60.00, 2),
-(2, 'X-Tudo', 'X-Tudo', 15.50, 24.99, 1);
 
 -- --------------------------------------------------------
 
-CREATE TABLE `imgprodutos` (
-  `imgprodutos_id` int NOT NULL AUTO_INCREMENT,
-  `imgprodutos_link` varchar(255) NOT NULL,
-  `imgprodutos_descricao` text NOT NULL,
-  `imgprodutos_produtos_id` int NOT NULL,
-  PRIMARY KEY (`imgprodutos_id`),
-  KEY `fk_imagens_produtos` (`imgprodutos_produtos_id`),
-  CONSTRAINT `fk_imagens_produtos` FOREIGN KEY (`imgprodutos_produtos_id`) REFERENCES `produtos` (`produtos_id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-INSERT INTO `imgprodutos` (`imgprodutos_id`, `imgprodutos_link`, `imgprodutos_descricao`, `imgprodutos_produtos_id`) VALUES
-(1, 'uploads/20250416/1744801962_9165428592f42702f939.jpg', 'Pizza1', 1);
-
--- --------------------------------------------------------
--- Novas tabelas com herança e controle de operações
--- --------------------------------------------------------
-
-CREATE TABLE `estoques` (
-  `estoques_id` int NOT NULL AUTO_INCREMENT,
-  `estoques_produtos_id` int NOT NULL,
-  `estoques_quantidade` int NOT NULL,
-  PRIMARY KEY (`estoques_id`),
-  FOREIGN KEY (`estoques_produtos_id`) REFERENCES `produtos` (`produtos_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+--
+-- Estrutura para tabela `vendas` (VERSÃO CORRIGIDA)
+--
 CREATE TABLE `vendas` (
   `vendas_id` int NOT NULL AUTO_INCREMENT,
   `vendas_clientes_id` int NOT NULL,
+  `vendas_funcionarios_id` int DEFAULT NULL,
   `vendas_data` datetime NOT NULL,
-  `vendas_valor_total` decimal(10,2) NOT NULL,
+  `vendas_total` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `vendas_status` varchar(50) DEFAULT 'Aberta',
   PRIMARY KEY (`vendas_id`),
-  FOREIGN KEY (`vendas_clientes_id`) REFERENCES `clientes` (`clientes_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  FOREIGN KEY (`vendas_clientes_id`) REFERENCES `clientes` (`clientes_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`vendas_funcionarios_id`) REFERENCES `funcionarios` (`funcionarios_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `pedidos`
+--
 CREATE TABLE `pedidos` (
   `pedidos_id` int NOT NULL AUTO_INCREMENT,
   `pedidos_vendas_id` int NOT NULL,
@@ -152,18 +146,10 @@ CREATE TABLE `pedidos` (
   PRIMARY KEY (`pedidos_id`),
   FOREIGN KEY (`pedidos_vendas_id`) REFERENCES `vendas` (`vendas_id`) ON DELETE CASCADE,
   FOREIGN KEY (`pedidos_produtos_id`) REFERENCES `produtos` (`produtos_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `entregas` (
-  `entregas_id` int NOT NULL AUTO_INCREMENT,
-  `entregas_vendas_id` int NOT NULL,
-  `entregas_funcionarios_id` int NOT NULL,
-  `entregas_data` datetime NOT NULL,
-  `entregas_status` varchar(100) DEFAULT 'Pendente',
-  PRIMARY KEY (`entregas_id`),
-  FOREIGN KEY (`entregas_vendas_id`) REFERENCES `vendas` (`vendas_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`entregas_funcionarios_id`) REFERENCES `funcionarios` (`funcionarios_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 COMMIT;
 
