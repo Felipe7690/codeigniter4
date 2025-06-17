@@ -105,6 +105,10 @@ $routes->get('estoques/delete/(:num)', 'EstoquesController::delete/$1');
 $routes->post('estoques/delete/(:num)', 'EstoquesController::delete/$1');
 $routes->post('estoques/search', 'EstoquesController::search');
 
+// Rotas para Pedidos
+$routes->get('pedidos', 'Pedidos::index');
+$routes->get('pedidos/create', 'Pedidos::create');
+$routes->post('pedidos/store', 'Pedidos::store');
 
 
 
