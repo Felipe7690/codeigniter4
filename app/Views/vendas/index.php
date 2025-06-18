@@ -27,15 +27,15 @@
                 <td><span class="badge bg-primary"><?= esc($venda->vendas_status) ?></span></td>
                 <td>
                     <?php if ($venda->vendas_status == 'Aberta'): ?>
-                        <a class="btn btn-success btn-sm" href="<?= base_url('venda/realizar/' . $venda->vendas_id) ?>" onclick="return confirm('Confirmar esta venda como realizada?');">
+                        <a class="btn btn-success btn-sm" href="<?= base_url('vendas/realizar/' . $venda->vendas_id) ?>" onclick="return confirm('Confirmar esta venda como realizada?');">
                             <i class="bi bi-check-lg"></i> Realizar
                         </a>
                     <?php endif; ?>
 
-                    <a class="btn btn-secondary btn-sm" href="<?= base_url('venda/edit/' . $venda->vendas_id) ?>">
+                    <a class="btn btn-secondary btn-sm" href="<?= base_url('vendas/edit/' . $venda->vendas_id) ?>">
                         <i class="bi bi-pencil-square"></i> Editar
                     </a>
-                    <a class="btn btn-danger btn-sm" href="<?= base_url('venda/delete/' . $venda->vendas_id) ?>" onclick="return confirm('Tem certeza?');">
+                    <a class="btn btn-danger btn-sm" href="<?= base_url('vendas/delete/' . $venda->vendas_id) ?>" onclick="return confirm('Tem certeza?');">
                         <i class="bi bi-x-circle"></i> Excluir
                     </a>
                 </td>

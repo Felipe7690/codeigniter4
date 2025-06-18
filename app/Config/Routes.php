@@ -74,13 +74,12 @@ $routes->get('/imgprodutos/delete/(:any)', 'Imgprodutos::delete/$1');
 $routes->get('/relatorios', 'Relatorios::index');
 $routes->get('/relatorios/index', 'Relatorios::index');
 
-$routes->get('vendas', 'Venda::index');
-$routes->get('vendas/(:num)', 'Venda::show/$1');
-$routes->post('vendas', 'Venda::create');
-$routes->put('vendas/(:num)', 'Venda::update/$1');
-$routes->delete('vendas/(:num)', 'Venda::delete/$1');
-$routes->get('venda/edit/(:num)', 'Venda::edit/$1');
-$routes->get('venda/realizar/(:num)', 'Venda::marcarRealizada/$1');
+$routes->get('vendas', 'Venda::index');                      // Para listar todas as vendas
+$routes->get('vendas/edit/(:num)', 'Venda::edit/$1');          // Para mostrar o formulário de edição
+$routes->post('vendas/update/(:num)', 'Venda::update/$1');      // Para salvar a atualização (o form envia via POST)
+$routes->get('vendas/delete/(:num)', 'Venda::delete/$1');      // Para deletar (o link usa GET)
+$routes->get('vendas/realizar/(:num)', 'Venda::marcarRealizada/$1'); // Para marcar como realizada (o link usa GET)
+
 
 $routes->get('clientes', 'ClientesController::index');
 $routes->get('clientes/create', 'ClientesController::create');

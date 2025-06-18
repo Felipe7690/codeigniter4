@@ -34,7 +34,7 @@ class Venda extends BaseController
     {
         $venda = $this->vendasModel->find($id);
         if (!$venda) {
-            return redirect()->to('/venda')->with('msg', msg('Venda não encontrada', 'danger'));
+            return redirect()->to('/vendas')->with('msg', msg('Venda não encontrada', 'danger'));
         }
         
         $data = [
@@ -43,14 +43,19 @@ class Venda extends BaseController
             'clientes'     => $this->clientesModel->findComNomeUsuario(),
             'funcionarios' => $this->funcionariosModel->findComNomeUsuario()
         ];
-        return view('vendas/form', $data); 
+        return view('vendas/form', $data);
     }
 
     public function update($id = null)
     {
+        // Pega o ID do funcionário do formulário
+        $funcionarioId = $this->request->getPost('vendas_funcionarios_id');
+
         $dados = [
             'vendas_clientes_id'       => $this->request->getPost('vendas_clientes_id'),
-            'vendas_funcionarios_id'   => $this->request->getPost('vendas_funcionarios_id'),
+            // AQUI ESTÁ A CORREÇÃO:
+            // Se o ID do funcionário não estiver vazio, usa o ID. Senão, usa null.
+            'vendas_funcionarios_id'   => !empty($funcionarioId) ? $funcionarioId : null,
             'vendas_data'              => $this->request->getPost('vendas_data'),
             'vendas_status'            => $this->request->getPost('vendas_status'),
         ];
@@ -60,7 +65,7 @@ class Venda extends BaseController
         } else {
             session()->setFlashdata('msg', msg('Erro ao atualizar venda.', 'danger'));
         }
-        return redirect()->to('/venda');
+        return redirect()->to('/vendas');
     }
 
     public function delete($id = null)
@@ -70,7 +75,7 @@ class Venda extends BaseController
         } else {
             session()->setFlashdata('msg', msg('Erro ao excluir venda.', 'danger'));
         }
-        return redirect()->to('/venda');
+        return redirect()->to('/vendas');
     }
 
     public function marcarRealizada($id = null)
@@ -81,6 +86,6 @@ class Venda extends BaseController
         } else {
             session()->setFlashdata('msg', msg('Erro ao atualizar status da venda.', 'danger'));
         }
-        return redirect()->to('/venda');
+        return redirect()->to('/vendas');
     }
 }
