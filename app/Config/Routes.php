@@ -112,8 +112,22 @@ $routes->post('pedidos/store', 'Pedidos::store');
 
 
 
+$routes->get('funcionarios', 'FuncionariosController::index');
+$routes->get('funcionarios/create', 'FuncionariosController::create');
+$routes->post('funcionarios/store', 'FuncionariosController::store');
+$routes->get('funcionarios/edit/(:num)', 'FuncionariosController::edit/$1');
+$routes->post('funcionarios/update/(:num)', 'FuncionariosController::update/$1');
+$routes->post('funcionarios/delete/(:num)', 'FuncionariosController::delete/$1');
 
 
+// ============================== ROTAS CLIENTES ==============================
+
+$routes->get('user/perfil', 'Perfil::index');
+$routes->get('cliente/pedidos', 'PedidosCliente::index');
+$routes->get('perfil', 'Perfil::index');
+$routes->get('perfil/editar', 'Perfil::editar');
+$routes->post('perfil/salvar', 'Perfil::salvar');
+$routes->get('cliente/home', 'HomeCliente::index');
 
 
 
