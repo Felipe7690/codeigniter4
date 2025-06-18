@@ -80,6 +80,7 @@ $routes->post('vendas', 'Venda::create');
 $routes->put('vendas/(:num)', 'Venda::update/$1');
 $routes->delete('vendas/(:num)', 'Venda::delete/$1');
 $routes->get('venda/edit/(:num)', 'Venda::edit/$1');
+$routes->get('venda/realizar/(:num)', 'Venda::marcarRealizada/$1');
 
 $routes->get('clientes', 'ClientesController::index');
 $routes->get('clientes/create', 'ClientesController::create');
@@ -105,13 +106,6 @@ $routes->get('estoques/delete/(:num)', 'EstoquesController::delete/$1');
 $routes->post('estoques/delete/(:num)', 'EstoquesController::delete/$1');
 $routes->post('estoques/search', 'EstoquesController::search');
 
-// Rotas para Pedidos
-$routes->get('pedidos', 'Pedidos::index');
-$routes->get('pedidos/create', 'Pedidos::create');
-$routes->post('pedidos/store', 'Pedidos::store');
-
-
-
 $routes->get('funcionarios', 'FuncionariosController::index');
 $routes->get('funcionarios/create', 'FuncionariosController::create');
 $routes->post('funcionarios/store', 'FuncionariosController::store');
@@ -129,9 +123,13 @@ $routes->get('perfil/editar', 'Perfil::editar');
 $routes->post('perfil/salvar', 'Perfil::salvar');
 $routes->get('cliente/home', 'HomeCliente::index');
 
-
-
-
-
+// Rotas para Pedidos
+$routes->get('pedidos', 'Pedidos::index');
+$routes->get('pedidos/new', 'Pedidos::new');                     // Rota para o botão "Novo"
+$routes->post('pedidos/create', 'Pedidos::create');               // Rota para salvar o novo pedido
+$routes->get('pedidos/edit/(:num)', 'Pedidos::edit/$1');          // Rota para o botão "Editar"
+$routes->post('pedidos/update/(:num)', 'Pedidos::update/$1');      // Rota para atualizar o pedido editado
+$routes->get('pedidos/delete/(:num)', 'Pedidos::delete/$1');      // Rota para o botão "Excluir"
+$routes->post('pedidos/search', 'Pedidos::search');                 // Rota para a busca
 
 

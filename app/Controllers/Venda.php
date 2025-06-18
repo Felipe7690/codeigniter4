@@ -3,60 +3,56 @@
 namespace App\Controllers;
 
 use App\Models\Vendas as Vendas_model;
-// Adicione os outros models que podem ser necessários
 use App\Models\Clientes as Clientes_model;
+use App\Models\Funcionarios as Funcionarios_model;
 
-class Venda extends BaseController // Mudado para BaseController, mais adequado para web
+class Venda extends BaseController
 {
     private $vendasModel;
     private $clientesModel;
+    private $funcionariosModel;
 
     public function __construct()
     {
         $this->vendasModel = new Vendas_model();
         $this->clientesModel = new Clientes_model();
+        $this->funcionariosModel = new Funcionarios_model();
         helper('functions');
     }
 
-    // Lista todas as vendas
     public function index()
     {
         $data = [
             'title'  => 'Lista de Vendas',
-            'vendas' => $this->vendasModel->getVendasComCliente(), // Usa a função do Model
+            'vendas' => $this->vendasModel->getVendasComCliente(),
             'msg'    => session()->getFlashdata('msg')
         ];
-
         return view('vendas/index', $data);
     }
 
-    // Exibe o formulário para editar uma venda
     public function edit($id = null)
     {
         $venda = $this->vendasModel->find($id);
-
         if (!$venda) {
             return redirect()->to('/venda')->with('msg', msg('Venda não encontrada', 'danger'));
         }
         
         $data = [
-            'title'    => 'Editar Venda',
-            'venda'    => $venda,
-            'clientes' => $this->clientesModel->findComNomeUsuario() // Busca todos os clientes para o select
+            'title'        => 'Editar Venda',
+            'venda'        => $venda,
+            'clientes'     => $this->clientesModel->findComNomeUsuario(),
+            'funcionarios' => $this->funcionariosModel->findComNomeUsuario()
         ];
-
-        return view('vendas/edit', $data);
+        return view('vendas/form', $data); 
     }
 
-    // Atualiza uma venda existente
     public function update($id = null)
     {
         $dados = [
-            'vendas_clientes_id' => $this->request->getPost('vendas_clientes_id'),
-            'vendas_data'        => $this->request->getPost('vendas_data'),
-            'vendas_status'      => $this->request->getPost('vendas_status'),
-            // Usando o nome correto da coluna: vendas_total
-            'vendas_total'       => $this->request->getPost('vendas_total'),
+            'vendas_clientes_id'       => $this->request->getPost('vendas_clientes_id'),
+            'vendas_funcionarios_id'   => $this->request->getPost('vendas_funcionarios_id'),
+            'vendas_data'              => $this->request->getPost('vendas_data'),
+            'vendas_status'            => $this->request->getPost('vendas_status'),
         ];
 
         if ($this->vendasModel->update($id, $dados)) {
@@ -64,17 +60,26 @@ class Venda extends BaseController // Mudado para BaseController, mais adequado 
         } else {
             session()->setFlashdata('msg', msg('Erro ao atualizar venda.', 'danger'));
         }
-
         return redirect()->to('/venda');
     }
 
-    // Deleta uma venda
     public function delete($id = null)
     {
         if ($this->vendasModel->delete($id)) {
             session()->setFlashdata('msg', msg('Venda excluída com sucesso!', 'success'));
         } else {
             session()->setFlashdata('msg', msg('Erro ao excluir venda.', 'danger'));
+        }
+        return redirect()->to('/venda');
+    }
+
+    public function marcarRealizada($id = null)
+    {
+        $dados = ['vendas_status' => 'Realizada'];
+        if ($this->vendasModel->update($id, $dados)) {
+            session()->setFlashdata('msg', msg('Venda marcada como Realizada!', 'success'));
+        } else {
+            session()->setFlashdata('msg', msg('Erro ao atualizar status da venda.', 'danger'));
         }
         return redirect()->to('/venda');
     }

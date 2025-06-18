@@ -5,112 +5,99 @@ use App\Models\Categorias as Categorias_model;
 
 class Categorias extends BaseController
 {   
-    // variavel que recebe a instancia do model
     private $categorias; 
     
-    // metodo construtor
     public function __construct(){
-        $this->categorias = new Categorias_model(); // instancia do model
-        $data['title'] = 'Categorias';
-        helper('functions'); // chama os metodos auxiliares
+        $this->categorias = new Categorias_model();
+        helper('functions');
     }
 
-    //
     public function index(): string
     {
+        $session = session();
         $data['title'] = 'Categorias';
         $data['categorias'] = $this->categorias->findAll();
+        $data['msg'] = $session->getFlashdata('msg'); 
         return view('categorias/index',$data);
     }
 
     public function new(): string
     {
-        $data['title'] = 'Categorias';
-        $data['op'] = 'create';
+        $data['title'] = 'Cadastrar Categoria';
         $data['form'] = 'cadastrar';
-        $data['categorias'] = (object) [
-            'categorias_nome'=> '',
-            'categorias_id'=> ''
-        ];
+        $data['op'] = 'create';
+        $data['categorias'] = new \stdClass();
         return view('categorias/form',$data);
     }
-
     
     public function create()
     {
+        $session = session();
 
-        // Checks whether the submitted data passed the validation rules.
-        if(!$this->validate([
-            'categorias_nome' => 'required|max_length[255]|min_length[3]',
-        ])) {
-            
-            // The validation fails, so returns the form.
-            $data['categorias'] = (object) [
-                //'categorias_id' => $_REQUEST['categorias_id'],
-                'categorias_nome' => $_REQUEST['categorias_nome'],
-            ];
-            
-            $data['title'] = 'Categorias';
-            $data['form'] = 'Cadastrar';
-            $data['op'] = 'create';
-            return view('categorias/form',$data);
+        // Regras de validação
+        if(!$this->validate(['categorias_nome' => 'required|max_length[255]|min_length[3]'])) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $dados = [
+            'categorias_nome' => $this->request->getPost('categorias_nome')
+        ];
 
-        $this->categorias->save([
-            'categorias_nome' => $_REQUEST['categorias_nome']
-
-        ]);
+        $this->categorias->save($dados);
         
-        $data['msg'] = msg('Cadastrado com Sucesso!','success');
-        $data['categorias'] = $this->categorias->findAll();
-        $data['title'] = 'Categorias';
-        return view('categorias/index',$data);
-
+        $session->setFlashdata('msg', msg('Cadastrado com Sucesso!', 'success'));
+        return redirect()->to('/categorias');
     }
 
     public function delete($id)
     {
-
-        $this->categorias->where('categorias_id', (int) $id)->delete();
-        $data['msg'] = msg('Deletado com Sucesso!','success');
-        $data['categorias'] = $this->categorias->findAll();
-        $data['title'] = 'Categorias';
-        return view('categorias/index',$data);
+        $session = session();
+        if ($this->categorias->delete($id)) {
+            $session->setFlashdata('msg', msg('Deletado com Sucesso!', 'success'));
+        } else {
+            $session->setFlashdata('msg', msg('Erro ao deletar!', 'danger'));
+        }
+        return redirect()->to('/categorias');
     }
 
     public function edit($id)
     {
-        $data['categorias'] = $this->categorias->find(['categorias_id' => (int) $id])[0];
-        $data['title'] = 'Categorias';
+        $categoria = $this->categorias->find($id);
+
+        if (!$categoria) {
+            return redirect()->to('/categorias')->with('msg', msg('Categoria não encontrada!', 'danger'));
+        }
+
+        $data['categorias'] = $categoria;
+        $data['title'] = 'Editar Categoria';
         $data['form'] = 'Alterar';
-        $data['op'] = 'update';
-        return view('categorias/form',$data);
+        $data['op'] = 'update/' . $id;
+        return view('categorias/form', $data);
     }
 
-    public function update()
+    public function update($id)
     {
-        $dataForm = [
-            'categorias_id' => $_REQUEST['categorias_id'],
-            'categorias_nome' => $_REQUEST['categorias_nome']
+        $session = session();
+
+        $dados = [
+            'categorias_nome' => $this->request->getPost('categorias_nome')
         ];
 
-        $this->categorias->update($_REQUEST['categorias_id'], $dataForm);
-        $data['msg'] = msg('Alterado com Sucesso!','success');
-        $data['categorias'] = $this->categorias->findAll();
-        $data['title'] = 'Categorias';
-        return view('categorias/index',$data);
+        if ($this->categorias->update($id, $dados)) {
+            $session->setFlashdata('msg', msg('Alterado com Sucesso!', 'success'));
+        } else {
+            $session->setFlashdata('msg', msg('Erro ao alterar!', 'danger'));
+        }
+        return redirect()->to('/categorias');
     }
 
     public function search()
     {
-
-        $data['categorias'] = $this->categorias->like('categorias_nome', $_REQUEST['pesquisar'])->find();
+        $termo = $this->request->getPost('pesquisar');
+        $data['categorias'] = $this->categorias->like('categorias_nome', $termo)->findAll();
         $total = count($data['categorias']);
-        $data['msg'] = msg("Dados Encontrados: {$total}",'success');
+        $data['msg'] = msg("Dados Encontrados: {$total}", 'info');
         $data['title'] = 'Categorias';
-        return view('categorias/index',$data);
-
+        return view('categorias/index', $data);
     }
-
 }

@@ -1,36 +1,20 @@
-<?php
-helper('functions');
-session();
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-    if ($login->usuarios_nivel == 1) {
-?>
-
 <?= $this->extend('Templates_admin') ?>
 <?= $this->section('content') ?>
 
 <div class="container pt-4 pb-5 bg-light">
     <h2 class="border-bottom border-2 border-primary mb-4">
-        Editar Venda
+        Editar Venda #<?= $venda->vendas_id ?>
     </h2>
 
-    <?php if (session('errors')): ?>
-        <div class="alert alert-danger">
-            <?= implode('<br>', session('errors')) ?>
-        </div>
-    <?php endif; ?>
-
-    <form action="<?= base_url('venda/update/' . $vendas->vendas_id) ?>" method="post">
-        <input type="hidden" name="vendas_id" value="<?= $vendas->vendas_id ?>">
+    <form action="<?= base_url('venda/update/' . $venda->vendas_id) ?>" method="post">
+        <?= csrf_field() ?>
 
         <div class="mb-3">
             <label for="vendas_clientes_id" class="form-label">Cliente</label>
-            <select class="form-control" name="vendas_clientes_id" id="vendas_clientes_id" required>
-                <?php foreach ($clientes as $cliente) : 
-                    $selected = ($cliente->clientes_id == $vendas->vendas_clientes_id) ? 'selected' : '';
-                ?>
-                    <option value="<?= $cliente->clientes_id ?>" <?= $selected ?>>
-                        <?= esc($cliente->clientes_nome) ?>
+            <select class="form-select" name="vendas_clientes_id" id="vendas_clientes_id" required>
+                <?php foreach ($clientes as $cliente): ?>
+                    <option value="<?= $cliente->clientes_id ?>" <?= $venda->vendas_clientes_id == $cliente->clientes_id ? 'selected' : '' ?>>
+                        <?= esc($cliente->usuarios_nome) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -38,12 +22,11 @@ if (isset($_SESSION['login'])) {
 
         <div class="mb-3">
             <label for="vendas_funcionarios_id" class="form-label">Funcionário</label>
-            <select class="form-control" name="vendas_funcionarios_id" id="vendas_funcionarios_id" required>
-                <?php foreach ($funcionarios as $funcionario) : 
-                    $selected = ($funcionario->funcionarios_id == $vendas->vendas_funcionarios_id) ? 'selected' : '';
-                ?>
-                    <option value="<?= $funcionario->funcionarios_id ?>" <?= $selected ?>>
-                        <?= esc($funcionario->funcionarios_nome) ?>
+            <select class="form-select" name="vendas_funcionarios_id" id="vendas_funcionarios_id">
+                <option value="">Nenhum</option>
+                <?php foreach ($funcionarios as $funcionario): ?>
+                    <option value="<?= $funcionario->funcionarios_id ?>" <?= $venda->vendas_funcionarios_id == $funcionario->funcionarios_id ? 'selected' : '' ?>>
+                        <?= esc($funcionario->usuarios_nome) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -52,19 +35,25 @@ if (isset($_SESSION['login'])) {
         <div class="mb-3">
             <label for="vendas_data" class="form-label">Data</label>
             <input type="datetime-local" class="form-control" name="vendas_data" id="vendas_data"
-                value="<?= date('Y-m-d\TH:i', strtotime($vendas->vendas_data)) ?>" required>
+                value="<?= date('Y-m-d\TH:i', strtotime($venda->vendas_data)) ?>" required>
         </div>
 
         <div class="mb-3">
-            <label for="vendas_total" class="form-label">Total</label>
+            <label for="vendas_total" class="form-label">Total (calculado automaticamente)</label>
             <input type="number" step="0.01" class="form-control" name="vendas_total" id="vendas_total"
-                value="<?= esc($vendas->vendas_total) ?>" required>
+                value="<?= esc($venda->vendas_total) ?>" readonly>
         </div>
 
         <div class="mb-3">
             <label for="vendas_status" class="form-label">Status</label>
-            <input type="text" class="form-control" name="vendas_status" id="vendas_status"
-                value="<?= esc($vendas->vendas_status) ?>" required>
+             <select name="vendas_status" class="form-select" required>
+                <?php $status_options = ['Aberta', 'Realizada', 'Cancelada']; ?>
+                <?php foreach($status_options as $status): ?>
+                    <option value="<?= $status ?>" <?= $venda->vendas_status == $status ? 'selected' : '' ?>>
+                        <?= $status ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
 
         <div class="mb-3">
@@ -77,12 +66,3 @@ if (isset($_SESSION['login'])) {
 </div>
 
 <?= $this->endSection() ?>
-
-<?php
-    } else {
-        echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
-    }
-} else {
-    echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
-}
-?>
