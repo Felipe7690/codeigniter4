@@ -13,7 +13,7 @@
     <?php if (isset($msg)) echo $msg; ?>
 
     <form action="<?= base_url('estoques/search'); ?>" class="d-flex" role="search" method="post">
-        <input class="form-control me-2" name="pesquisar" type="search" placeholder="Pesquisar produto..." aria-label="Search">
+        <input class="form-control me-2" name="pesquisar" type="search" placeholder="Pesquisar" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">
             <i class="bi bi-search"></i>
         </button>

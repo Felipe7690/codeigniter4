@@ -122,6 +122,8 @@ $routes->get('perfil', 'Perfil::index');
 $routes->get('perfil/editar', 'Perfil::editar');
 $routes->post('perfil/salvar', 'Perfil::salvar');
 $routes->get('cliente/home', 'HomeCliente::index');
+$routes->get('/', 'HomeCliente::index');
+
 
 // Rotas para Pedidos
 $routes->get('pedidos', 'Pedidos::index');
@@ -132,4 +134,10 @@ $routes->post('pedidos/update/(:num)', 'Pedidos::update/$1');      // Rota para 
 $routes->get('pedidos/delete/(:num)', 'Pedidos::delete/$1');      // Rota para o botão "Excluir"
 $routes->post('pedidos/search', 'Pedidos::search');                 // Rota para a busca
 
+$routes->get('cliente/endereco', 'EnderecosCliente::index');
+$routes->match(['get', 'post'], 'cliente/endereco/editar', 'EnderecosCliente::editar');
+$routes->post('cliente/endereco/salvar', 'EnderecosCliente::salvar');
+$routes->match(['get', 'post'], 'enderecoscliente/editar', 'EnderecosCliente::editar');
 
+$routes->post('cliente/pedido/comprar', 'PedidosCliente::comprar');
+$routes->match(['get', 'post'], 'cliente/pedido/comprar', 'PedidosCliente::comprar');

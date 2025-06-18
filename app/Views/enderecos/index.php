@@ -19,7 +19,7 @@ session();
             class="form-control me-2"
             name="pesquisarEndereco"
             type="search"
-            placeholder="Pesquisar cliente pelo endereço"
+            placeholder="Pesquisar"
             aria-label="Pesquisar"
             value="<?= isset($pesquisarEndereco) ? esc($pesquisarEndereco) : '' ?>"
             required
