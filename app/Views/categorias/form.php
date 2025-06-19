@@ -1,19 +1,21 @@
 <?php
-helper('functions');
-session();
-
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-
-    if ($login->usuarios_nivel == 1) {
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
 
-<?= $this->extend('Templates_admin') ?>
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
 <div class="container pt-4 pb-5 bg-light">
     <h2 class="border-bottom border-2 border-primary">
-        <?= ucfirst($form) . ' ' . $title ?>
+        <?= esc(ucfirst($form ?? '')) . ' ' . esc($title ?? '') ?>
     </h2>
 
     <?php if (!empty(session()->getFlashdata('errors'))): ?>
@@ -26,11 +28,11 @@ if (isset($_SESSION['login'])) {
         </div>
     <?php endif; ?>
 
-    <form action="<?= base_url('categorias/' . $op); ?>" method="post">
+    <form action="<?= base_url('categorias/' . ($op ?? '')); ?>" method="post">
         <?= csrf_field() ?>
 
         <div class="mb-3">
-            <label for="categorias_nome" class="form-label">Categoria</label>
+            <label for="categorias_nome" class="form-label">Nome da Categoria</label>
             <input type="text" class="form-control" name="categorias_nome" id="categorias_nome"
                    value="<?= old('categorias_nome', $categorias->categorias_nome ?? '') ?>" required>
         </div>
@@ -41,7 +43,7 @@ if (isset($_SESSION['login'])) {
 
         <div class="mb-3">
             <button class="btn btn-success" type="submit">
-                <?= ucfirst($form) ?> <i class="bi bi-floppy"></i>
+                <?= esc(ucfirst($form ?? '')) ?> <i class="bi bi-floppy"></i>
             </button>
         </div>
     </form>
@@ -49,11 +51,8 @@ if (isset($_SESSION['login'])) {
 
 <?= $this->endSection() ?>
 
-<?php
-    } else {
+<?php 
+    else:
         echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
-    }
-} else {
-    echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
-}
+    endif;
 ?>

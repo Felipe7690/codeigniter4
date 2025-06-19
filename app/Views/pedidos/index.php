@@ -1,18 +1,20 @@
 <?php
-helper('functions');
-session();
-
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-
-    if ($login->usuarios_nivel == 1) {
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
 
-<?= $this->extend('Templates_admin') ?>
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
 <div class="container">
-    <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= esc($title) ?> </h2>
+    <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= esc($title ?? 'Pedidos') ?> </h2>
 
     <?php if (!empty($msg)) { echo $msg; } ?>
 
@@ -40,35 +42,34 @@ if (isset($_SESSION['login'])) {
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <?php foreach ($pedidos as $pedido): ?>
-                <tr>
-                    <td><?= $pedido->pedidos_id ?></td>
-                    <td>Venda #<?= $pedido->pedidos_vendas_id ?> (<?= esc($pedido->cliente_nome) ?>)</td>
-                    <td><?= esc($pedido->produtos_nome) ?></td>
-                    <td><?= $pedido->pedidos_quantidade ?></td>
-                    <td>R$ <?= moedaReal($pedido->pedidos_preco_unitario) ?></td>
-                    <td class="text-end">
-                        <a class="btn btn-primary btn-sm" href="<?= base_url('pedidos/edit/' . $pedido->pedidos_id); ?>">
-                            <i class="bi bi-pencil-square"></i> Editar
-                        </a>
-                        <a class="btn btn-danger btn-sm" href="<?= base_url('pedidos/delete/' . $pedido->pedidos_id); ?>" 
-                           onclick="return confirm('Tem certeza que deseja excluir este item do pedido?');">
-                            <i class="bi bi-x-circle"></i> Excluir
-                        </a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
+            <?php if (!empty($pedidos)): ?>
+                <?php foreach ($pedidos as $pedido): ?>
+                    <tr>
+                        <td><?= $pedido->pedidos_id ?></td>
+                        <td>Venda #<?= $pedido->pedidos_vendas_id ?> (<?= esc($pedido->cliente_nome) ?>)</td>
+                        <td><?= esc($pedido->produtos_nome) ?></td>
+                        <td><?= $pedido->pedidos_quantidade ?></td>
+                        <td>R$ <?= moedaReal($pedido->pedidos_preco_unitario) ?></td>
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm" href="<?= base_url('pedidos/edit/' . $pedido->pedidos_id); ?>">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <a class="btn btn-danger btn-sm" href="<?= base_url('pedidos/delete/' . $pedido->pedidos_id); ?>" 
+                               onclick="return confirm('Tem certeza que deseja excluir este item do pedido?');">
+                                <i class="bi bi-x-circle"></i> Excluir
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
 
 <?= $this->endSection() ?>
 
-<?php
-    } else {
+<?php 
+    else:
         echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
-    }
-} else {
-    echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
-}
+    endif;
 ?>

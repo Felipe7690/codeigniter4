@@ -1,84 +1,73 @@
 <?php
-    helper('functions');
-    session();
-    if(isset($_SESSION['login'])){
-        $login = $_SESSION['login'];
-        print_r($login);
-        if($login->usuarios_nivel == 1){
-    
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
-<?= $this->extend('Templates_admin') ?>
+
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
     <div class="container">
+        <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= esc($title ?? 'Imagens dos Produtos') ?> </h2>
 
-        <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= $title ?> </h2>
+        <?php if (!empty($msg)) { echo $msg; } ?>
 
-        <?php if(isset($msg)){echo $msg;} ?>
-
-        <form action="<?= base_url('imgprodutos/search'); ?>" class="d-flex" role="search" method="post">
+        <form action="<?= base_url('imgprodutos/search'); ?>" class="d-flex mb-3" role="search" method="post">
             <input class="form-control me-2" name="pesquisar" type="search"
-                placeholder="Pesquisar" aria-label="Search">
+                placeholder="Pesquisar por descrição" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">
                 <i class="bi bi-search"></i>
             </button>
         </form>
 
-        <table class="table">
+        <table class="table table-striped align-middle">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    <th scope="col">Img</th>
-                    <th scope="col">Link</th>
-                    <th scope="col">
-                        <a class="btn btn-success"  href="<?= base_url('imgprodutos/new'); ?>">
-                            Novo
-                            <i class="bi bi-plus-circle"></i>
+                    <th scope="col">Imagem</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col" class="text-end">
+                        <a class="btn btn-success" href="<?= base_url('imgprodutos/new'); ?>">
+                            <i class="bi bi-plus-circle"></i> Novo
                         </a>
                     </th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
                 
-                <!-- Aqui vai o laço de repetição -->
-                <?php for($i=0; $i < count($imgprodutos); $i++){ ?>
+                <?php foreach ($imgprodutos as $img): ?>
                     <tr>
-                        <th scope="row"><?= $imgprodutos[$i]->imgprodutos_id; ?></th>
+                        <th scope="row"><?= $img->imgprodutos_id; ?></th>
                         <td>
-                            <img width="50" src="<?= base_url('assets/'.$imgprodutos[$i]->imgprodutos_link) ?>" alt="<?= $imgprodutos[$i]->imgprodutos_descricao ?>">
+                            <img width="80" class="img-thumbnail" src="<?= base_url($img->imgprodutos_link) ?>" alt="<?= esc($img->imgprodutos_descricao) ?>">
                         </td>
                         <td>  
-                            <?= 'assets/'.$imgprodutos[$i]->imgprodutos_link; ?>
+                            <?= esc($img->imgprodutos_descricao); ?>
                         </td>
-                        <td>
-                            <a class="btn btn-primary"  href="<?= base_url('imgprodutos/edit/'.$imgprodutos[$i]->imgprodutos_id); ?>">
-                                Editar
-                                <i class="bi bi-pencil-square"></i>
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm" href="<?= base_url('imgprodutos/edit/'.$img->imgprodutos_id); ?>">
+                                <i class="bi bi-pencil-square"></i> Editar
                             </a>
-                            <a class="btn btn-danger"  href="<?= base_url('imgprodutos/delete/'.$imgprodutos[$i]->imgprodutos_id); ?>">
-                                Excluir
-                                <i class="bi bi-x-circle"></i>
+                            <a class="btn btn-danger btn-sm" href="<?= base_url('imgprodutos/delete/'.$img->imgprodutos_id); ?>" onclick="return confirm('Tem certeza?');">
+                                <i class="bi bi-x-circle"></i> Excluir
                             </a>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php endforeach; ?>
 
             </tbody>
         </table>
-
     </div>
 <?= $this->endSection() ?>
 
 <?php 
-        }else{
-
-            $data['msg'] = msg("Sem permissão de acesso!","danger");
-            echo view('login',$data);
-        }
-    }else{
-
-        $data['msg'] = msg("O usuário não está logado!","danger");
-        echo view('login',$data);
-    }
-
+    else:
+        echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
+    endif;
 ?>

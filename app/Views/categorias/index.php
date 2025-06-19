@@ -1,61 +1,60 @@
 <?php
-    helper('functions');
-    session();
-    if(isset($_SESSION['login'])){
-        $login = $_SESSION['login'];
-        print_r($login);
-        if($login->usuarios_nivel == 1){
-    
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
-<?= $this->extend('Templates_admin') ?>
+
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
     <div class="container">
 
-        <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= $title ?> </h2>
+        <h2 class="border-bottom border-2 border-primary mt-3 mb-4"> <?= esc($title ?? 'Categorias') ?> </h2>
 
-        <?php if(isset($msg)){echo $msg;} ?>
+        <?php if(!empty($msg)){echo $msg;} ?>
 
-        <form action="<?= base_url('categorias/search'); ?>" class="d-flex" role="search" method="post">
+        <form action="<?= base_url('categorias/search'); ?>" class="d-flex mb-3" role="search" method="post">
             <input class="form-control me-2" name="pesquisar" type="search"
-                placeholder="Pesquisar" aria-label="Search">
+                placeholder="Pesquisar por categoria" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">
             <i class="bi bi-search"></i>
             </button>
         </form>
 
-        <table class="table">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Categoria</th>
-                    <th scope="col">
+                    <th scope="col" class="text-end">
                         <a class="btn btn-success"  href="<?= base_url('categorias/new'); ?>">
-                            Novo
-                            <i class="bi bi-plus-circle"></i>
+                            <i class="bi bi-plus-circle"></i> Novo
                         </a>
                     </th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
                 
-                <!-- Aqui vai o laço de repetição -->
-                <?php for($i=0; $i < count($categorias); $i++){ ?>
+                <?php foreach ($categorias as $categoria): ?>
                     <tr>
-                        <th scope="row"><?= $categorias[$i]->categorias_id; ?></th>
-                        <td><?= $categorias[$i]->categorias_nome; ?></td>
-                        <td>
-                            <a class="btn btn-primary"  href="<?= base_url('categorias/edit/'.$categorias[$i]->categorias_id); ?>">
-                                Editar
-                                <i class="bi bi-pencil-square"></i>
+                        <th scope="row"><?= $categoria->categorias_id; ?></th>
+                        <td><?= esc($categoria->categorias_nome); ?></td>
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm"  href="<?= base_url('categorias/edit/'.$categoria->categorias_id); ?>">
+                                <i class="bi bi-pencil-square"></i> Editar
                             </a>
-                            <a class="btn btn-danger"  href="<?= base_url('categorias/delete/'.$categorias[$i]->categorias_id); ?>">
-                                Excluir
-                                <i class="bi bi-x-circle"></i>
+                            <a class="btn btn-danger btn-sm"  href="<?= base_url('categorias/delete/'.$categoria->categorias_id); ?>" onclick="return confirm('Tem certeza? Excluir uma categoria pode afetar os produtos associados.');">
+                                <i class="bi bi-x-circle"></i> Excluir
                             </a>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php endforeach; ?>
 
             </tbody>
         </table>
@@ -64,15 +63,7 @@
 <?= $this->endSection() ?>
 
 <?php 
-        }else{
-
-            $data['msg'] = msg("Sem permissão de acesso!","danger");
-            echo view('login',$data);
-        }
-    }else{
-
-        $data['msg'] = msg("O usuário não está logado!","danger");
-        echo view('login',$data);
-    }
-
+    else:
+        echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
+    endif;
 ?>

@@ -1,19 +1,21 @@
 <?php
-helper('functions');
-session();
-
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-
-    if ($login->usuarios_nivel == 1) {
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
 
-<?= $this->extend('Templates_admin') ?>
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
 <div class="container pt-4 pb-5 bg-light">
     <h2 class="border-bottom border-2 border-primary">
-        <?= ucfirst($form) . ' ' . $title ?>
+        <?= esc(ucfirst($form ?? '')) . ' ' . esc($title ?? '') ?>
     </h2>
 
     <?php if (!empty(session()->getFlashdata('errors'))): ?>
@@ -26,7 +28,7 @@ if (isset($_SESSION['login'])) {
         </div>
     <?php endif; ?>
 
-    <form action="<?= base_url('pedidos/' . $op); ?>" method="post">
+    <form action="<?= base_url('pedidos/' . ($op ?? '')); ?>" method="post">
         <?= csrf_field() ?>
 
         <div class="mb-3">
@@ -77,13 +79,13 @@ if (isset($_SESSION['login'])) {
         <div class="mb-3">
             <label for="pedidos_quantidade" class="form-label">Quantidade</label>
             <input type="number" class="form-control" name="pedidos_quantidade"
-                   value="<?= old('pedidos_quantidade', $pedidos->pedidos_quantidade ?? '') ?>" id="pedidos_quantidade" required>
+                   value="<?= old('pedidos_quantidade', $pedidos->pedidos_quantidade ?? '1') ?>" id="pedidos_quantidade" required>
         </div>
 
         <div class="mb-3">
             <label for="pedidos_preco_unitario" class="form-label">Preço Unitário</label>
             <input type="number" step="0.01" class="form-control" name="pedidos_preco_unitario"
-                   value="<?= old('pedidos_preco_unitario', $pedidos->pedidos_preco_unitario ?? '') ?>" id="pedidos_preco_unitario" required>
+                   value="<?= old('pedidos_preco_unitario', $pedidos->pedidos_preco_unitario ?? '0.00') ?>" id="pedidos_preco_unitario" required>
         </div>
 
         <?php if (!empty($pedidos->pedidos_id)): ?>
@@ -92,7 +94,7 @@ if (isset($_SESSION['login'])) {
 
         <div class="mb-3">
             <button class="btn btn-success" type="submit">
-                <?= ucfirst($form) ?> <i class="bi bi-floppy"></i>
+                <?= esc(ucfirst($form ?? '')) ?> <i class="bi bi-floppy"></i>
             </button>
         </div>
     </form>
@@ -115,11 +117,8 @@ function toggleNovaVenda(value) {
 
 <?= $this->endSection() ?>
 
-<?php
-    } else {
+<?php 
+    else:
         echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
-    }
-} else {
-    echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
-}
+    endif;
 ?>

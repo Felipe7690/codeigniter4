@@ -3,7 +3,6 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql:3306
--- Tempo de geração: 17/06/2025 às 20:20
 -- Versão do servidor: 8.0.41
 -- Versão do PHP: 8.2.8
 
@@ -94,8 +93,6 @@ CREATE TABLE `produtos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
--- TABELA INCLUÍDA NOVAMENTE
--- --------------------------------------------------------
 
 CREATE TABLE `imgprodutos` (
   `imgprodutos_id` int NOT NULL AUTO_INCREMENT,
@@ -109,8 +106,6 @@ CREATE TABLE `imgprodutos` (
 
 
 -- --------------------------------------------------------
--- TABELA INCLUÍDA NOVAMENTE
--- --------------------------------------------------------
 
 CREATE TABLE `estoques` (
   `estoques_id` int NOT NULL AUTO_INCREMENT,
@@ -120,8 +115,6 @@ CREATE TABLE `estoques` (
   FOREIGN KEY (`estoques_produtos_id`) REFERENCES `produtos` (`produtos_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
--- TABELA CORRIGIDA E ALINHADA COM O MODEL
 -- --------------------------------------------------------
 
 CREATE TABLE `vendas` (
@@ -150,18 +143,18 @@ CREATE TABLE `pedidos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
--- TABELA INCLUÍDA NOVAMENTE
+-- TABELA DE ENTREGAS CORRIGIDA
 -- --------------------------------------------------------
 
 CREATE TABLE `entregas` (
   `entregas_id` int NOT NULL AUTO_INCREMENT,
   `entregas_vendas_id` int NOT NULL,
-  `entregas_funcionarios_id` int NOT NULL,
+  `entregas_funcionarios_id` int DEFAULT NULL,
   `entregas_data` datetime NOT NULL,
   `entregas_status` varchar(100) DEFAULT 'Pendente',
   PRIMARY KEY (`entregas_id`),
   FOREIGN KEY (`entregas_vendas_id`) REFERENCES `vendas` (`vendas_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`entregas_funcionarios_id`) REFERENCES `funcionarios` (`funcionarios_id`) ON DELETE CASCADE
+  FOREIGN KEY (`entregas_funcionarios_id`) REFERENCES `funcionarios` (`funcionarios_id`) ON DELETE SET NULL 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 

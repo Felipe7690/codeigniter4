@@ -10,20 +10,24 @@ class Usuarios extends Model
     protected $table            = 'usuarios';
     protected $primaryKey       = 'usuarios_id';
     protected $useAutoIncrement = true;
-    // protected $returnType       = 'array';
     protected $returnType       = 'object';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['usuarios_nome',
-                                   'usuarios_sobrenome',
-                                   'usuarios_email',
-                                   'usuarios_cpf',
-                                   'usuarios_data_nasc',
-                                   'usuarios_nivel',
-                                   'usuarios_fone',
-                                   'usuarios_senha',
-                                   'usuarios_data_cadastro'
-                                    ];
+    protected $allowedFields    = [
+        'usuarios_nome',
+        'usuarios_sobrenome',
+        'usuarios_email',
+        'usuarios_cpf',
+        'usuarios_data_nasc',
+        'usuarios_nivel',
+        'usuarios_fone',
+        'usuarios_senha',
+        'usuarios_data_cadastro'
+    ];
+
+    protected array $casts = [
+        'usuarios_nivel' => 'integer',
+    ];
 
     // Dates
     protected $useTimestamps = false;

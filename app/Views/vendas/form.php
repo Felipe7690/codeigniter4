@@ -1,12 +1,16 @@
 <?php
-helper('functions');
-session();
-if (isset($_SESSION['login'])) {
-    $login = $_SESSION['login'];
-    if ($login->usuarios_nivel == 1) {
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
 
-<?= $this->extend('Templates_admin') ?>
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
 <div class="container pt-4 pb-5 bg-light">
@@ -14,7 +18,7 @@ if (isset($_SESSION['login'])) {
         Editar Venda #<?= esc($venda->vendas_id) ?>
     </h2>
 
-    <?php if (session('errors')): ?>
+    <?php if (!empty(session('errors'))): ?>
         <div class="alert alert-danger">
             <ul>
                 <?php foreach (session('errors') as $error): ?>
@@ -31,11 +35,13 @@ if (isset($_SESSION['login'])) {
             <label for="vendas_clientes_id" class="form-label">Cliente</label>
             <select name="vendas_clientes_id" class="form-select" id="vendas_clientes_id" required>
                 <option value="">Selecione um cliente</option>
-                <?php foreach ($clientes as $cliente): ?>
-                    <option value="<?= $cliente->clientes_id ?>" <?= old('vendas_clientes_id', $venda->vendas_clientes_id) == $cliente->clientes_id ? 'selected' : '' ?>>
-                        <?= esc($cliente->usuarios_nome) ?>
-                    </option>
-                <?php endforeach; ?>
+                <?php if(!empty($clientes)): ?>
+                    <?php foreach ($clientes as $cliente): ?>
+                        <option value="<?= $cliente->clientes_id ?>" <?= old('vendas_clientes_id', $venda->vendas_clientes_id) == $cliente->clientes_id ? 'selected' : '' ?>>
+                            <?= esc($cliente->usuarios_nome) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </select>
         </div>
         
@@ -43,11 +49,13 @@ if (isset($_SESSION['login'])) {
             <label for="vendas_funcionarios_id" class="form-label">Funcionário Responsável</label>
             <select name="vendas_funcionarios_id" class="form-select" id="vendas_funcionarios_id">
                 <option value="">Nenhum</option>
-                <?php foreach ($funcionarios as $funcionario): ?>
-                    <option value="<?= $funcionario->funcionarios_id ?>" <?= old('vendas_funcionarios_id', $venda->vendas_funcionarios_id ?? '') == $funcionario->funcionarios_id ? 'selected' : '' ?>>
-                        <?= esc($funcionario->usuarios_nome) ?>
-                    </option>
-                <?php endforeach; ?>
+                <?php if(!empty($funcionarios)): ?>
+                    <?php foreach ($funcionarios as $funcionario): ?>
+                        <option value="<?= $funcionario->funcionarios_id ?>" <?= old('vendas_funcionarios_id', $venda->vendas_funcionarios_id ?? '') == $funcionario->funcionarios_id ? 'selected' : '' ?>>
+                            <?= esc($funcionario->usuarios_nome) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </select>
         </div>
 
@@ -84,11 +92,8 @@ if (isset($_SESSION['login'])) {
 
 <?= $this->endSection() ?>
 
-<?php
-    } else {
+<?php 
+    else:
         echo view('login', ['msg' => msg("Sem permissão de acesso!", "danger")]);
-    }
-} else {
-    echo view('login', ['msg' => msg("O usuário não está logado!", "danger")]);
-}
+    endif;
 ?>

@@ -112,6 +112,10 @@ $routes->get('funcionarios/edit/(:num)', 'FuncionariosController::edit/$1');
 $routes->post('funcionarios/update/(:num)', 'FuncionariosController::update/$1');
 $routes->post('funcionarios/delete/(:num)', 'FuncionariosController::delete/$1');
 
+// ============================== ROTAS PARA PAGINA NIVEL FUNCIONARIO ============================== 
+
+$routes->get('funcionario', 'UserFuncionario::index', ['filter' => 'auth']);
+
 
 // ============================== ROTAS CLIENTES ==============================
 
@@ -132,6 +136,15 @@ $routes->get('pedidos/edit/(:num)', 'Pedidos::edit/$1');          // Rota para o
 $routes->post('pedidos/update/(:num)', 'Pedidos::update/$1');      // Rota para atualizar o pedido editado
 $routes->get('pedidos/delete/(:num)', 'Pedidos::delete/$1');      // Rota para o botão "Excluir"
 $routes->post('pedidos/search', 'Pedidos::search');                 // Rota para a busca
+
+// ROTAS PARA ENTREGAS
+$routes->get('entregas', 'Entregas::index');
+$routes->get('entregas/new', 'Entregas::new');
+$routes->get('entregas/new/(:num)', 'Entregas::new/$1');
+$routes->post('entregas/create', 'Entregas::create');
+$routes->get('entregas/edit/(:num)', 'Entregas::edit/$1');
+$routes->post('entregas/update/(:num)', 'Entregas::update/$1');
+$routes->get('entregas/delete/(:num)', 'Entregas::delete/$1');
 
 $routes->get('cliente/endereco', 'EnderecosCliente::index');
 $routes->match(['get', 'post'], 'cliente/endereco/editar', 'EnderecosCliente::editar');

@@ -1,82 +1,92 @@
 <?php
-    helper('functions');
-    session();
-    if(isset($_SESSION['login'])){
-        $login = $_SESSION['login'];
-        print_r($login);
-        if($login->usuarios_nivel == 1){
-    
+    $template = '';
+    if (session()->has('login')) {
+        $login = session()->get('login');
+        
+        if (in_array((int)$login->usuarios_nivel, [1, 2])) {
+            $template = ($login->usuarios_nivel == 1) ? 'Templates_admin' : 'Templates_funcionario';
+        }
+    }
 ?>
-<?= $this->extend('Templates_admin') ?>
+
+<?php if ($template): ?>
+
+<?= $this->extend($template) ?>
 <?= $this->section('content') ?>
 
+<div class="container pt-4 pb-5 bg-light">
+    <h2 class="border-bottom border-2 border-primary">
+        <?= esc(ucfirst($form ?? '')) . ' ' . esc($title ?? '') ?>
+    </h2>
 
-    <div class="container pt-4 pb-5 bg-light">
-        <h2 class="border-bottom border-2 border-primary">
-            <?= ucfirst($form).' '.$title ?>
-        </h2>
+    <?php if (!empty(session()->getFlashdata('errors'))): ?>
+        <div class="alert alert-danger">
+            <ul>
+                <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                    <li><?= esc($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 
-        <form action="<?= base_url('produtos/'.$op); ?>" method="post">
-            <div class="mb-3">
-                <label for="produtos_nome" class="form-label"> Produto </label>
-                <input type="text" class="form-control" name="produtos_nome" value="<?= $produtos->produtos_nome; ?>"  id="produtos_nome">
-            </div>
-
-            <div class="mb-3">
-                <label for="produtos_descricao" class="form-label"> Descrição </label>
-                <input type="text" class="form-control" name="produtos_descricao" value="<?= $produtos->produtos_descricao; ?>"  id="produtos_descricao">
-            </div>
-
-            <div class="mb-3">
-                <label for="produtos_preco_custo" class="form-label"> Preço de Custo </label>
-                <input type="text" class="form-control" name="produtos_preco_custo" value="<?= moedaReal($produtos->produtos_preco_custo); ?>"  id="produtos_preco_custo">
-            </div>
-
-            <div class="mb-3">
-                <label for="produtos_preco_venda" class="form-label"> Preço de Venda </label>
-                <input type="text" class="form-control" name="produtos_preco_venda" value="<?= moedaReal($produtos->produtos_preco_venda); ?>"  id="produtos_preco_venda">
-            </div>
-
-            <div class="mb-3">
-                <label for="produtos_categorias_id" class="form-label"> Categoria </label>
-                <select class="form-control" name="produtos_categorias_id"  id="produtos_categorias_id">
-                    
-                    <?php 
-                    for($i=0; $i < count($categorias);$i++){ 
-                        $selected = '';
-                        if($categorias[$i]->categorias_id == $produtos->produtos_categorias_id){
-                            $selected = 'selected'; 
-                        }
-                    ?>
-                        <option <?= $selected; ?> value="<?= $categorias[$i]->categorias_id; ?>">
-                            <?= $categorias[$i]->categorias_nome; ?>
-                        </option>
-                    <?php } ?>
-
-                </select>
-            </div>
-            <input type="hidden" name="produtos_id" value="<?= $produtos->produtos_id; ?>" >
-
-            <div class="mb-3">
-                <button class="btn btn-success" type="submit"> <?= ucfirst($form)  ?> <i class="bi bi-floppy"></i></button>
-            </div>
+    <form action="<?= base_url('produtos/' . ($op ?? '')) ?>" method="post">
+        <?= csrf_field() ?>
         
-        </form>
+        <div class="mb-3">
+            <label for="produtos_nome" class="form-label">Nome do Produto</label>
+            <input type="text" class="form-control" name="produtos_nome" id="produtos_nome"
+                   value="<?= old('produtos_nome', $produto->produtos_nome ?? '') ?>" required>
+        </div>
 
-    </div>
+        <div class="mb-3">
+            <label for="produtos_descricao" class="form-label">Descrição</label>
+            <textarea class="form-control" name="produtos_descricao" id="produtos_descricao" rows="3"><?= old('produtos_descricao', $produto->produtos_descricao ?? '') ?></textarea>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="produtos_preco_custo" class="form-label">Preço de Custo</label>
+                <input type="text" class="form-control" name="produtos_preco_custo" id="produtos_preco_custo"
+                       value="<?= old('produtos_preco_custo', isset($produto->produtos_preco_custo) ? number_format($produto->produtos_preco_custo, 2, ',', '.') : '0,00') ?>" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="produtos_preco_venda" class="form-label">Preço de Venda</label>
+                <input type="text" class="form-control" name="produtos_preco_venda" id="produtos_preco_venda"
+                       value="<?= old('produtos_preco_venda', isset($produto->produtos_preco_venda) ? number_format($produto->produtos_preco_venda, 2, ',', '.') : '0,00') ?>" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="produtos_categorias_id" class="form-label">Categoria</label>
+            <select name="produtos_categorias_id" class="form-select" required>
+                <option value="">Selecione uma categoria</option>
+                <?php if (!empty($categorias)): ?>
+                    <?php foreach ($categorias as $categoria): ?>
+                        <option value="<?= $categoria->categorias_id ?>" <?= old('produtos_categorias_id', $produto->produtos_categorias_id ?? '') == $categoria->categorias_id ? 'selected' : '' ?>>
+                            <?= esc($categoria->categorias_nome) ?>
+                        </option>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </select>
+        </div>
+
+        <?php if (!empty($produto->produtos_id)): ?>
+            <input type="hidden" name="produtos_id" value="<?= $produto->produtos_id; ?>">
+        <?php endif; ?>
+
+        <div class="mb-3">
+            <button class="btn btn-success" type="submit">
+                <?= esc(ucfirst($form ?? '')) ?> <i class="bi bi-floppy"></i>
+            </button>
+        </div>
+    </form>
+</div>
 
 <?= $this->endSection() ?>
 
 <?php 
-        }else{
-
-            $data['msg'] = msg("Sem permissão de acesso!","danger");
-            echo view('login',$data);
-        }
-    }else{
-
-        $data['msg'] = msg("O usuário não está logado!","danger");
-        echo view('login',$data);
-    }
-
+    else:
+        $data['msg'] = msg("Sem permissão de acesso!", "danger");
+        echo view('login', $data);
+    endif;
 ?>
