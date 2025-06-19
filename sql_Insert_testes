@@ -1,0 +1,79 @@
+-- Inicia uma transação para garantir que tudo seja inserido ou nada
+START TRANSACTION;
+
+-- DADOS PARA A TABELA: categorias
+INSERT INTO `categorias` (`categorias_id`, `categorias_nome`) VALUES
+(1, 'Pizzas'),
+(2, 'Hambúrgueres'),
+(3, 'Bebidas');
+
+-- DADOS PARA A TABELA: cidades
+INSERT INTO `cidades` (`cidades_id`, `cidades_nome`, `cidades_uf`) VALUES
+(1, 'Rubiataba', 'GO'),
+(2, 'Santa Catarina', 'SC');
+
+-- DADOS PARA A TABELA: usuarios
+INSERT INTO `usuarios` (`usuarios_id`, `usuarios_nome`, `usuarios_sobrenome`, `usuarios_email`, `usuarios_cpf`, `usuarios_data_nasc`, `usuarios_nivel`, `usuarios_fone`, `usuarios_senha`, `usuarios_data_cadastro`) VALUES
+(1, 'Douglas', 'Cassio', 'dg@exemplo.com', '000.000.000-00', '1990-01-15', 1, '11987654321', MD5('123456'), NOW()),
+(2, 'Felipe', 'Rafael', 'fr@exemplo.com', '111.111.111-11', '1995-05-20', 2, '21912345678', MD5('123456'), NOW()),
+(3, 'Breno', 'Giovani', 'bg@exemplo.com', '222.222.222-22', '1988-11-30', 0, '11955554444', MD5('123456'), NOW());
+
+-- DADOS PARA A TABELA: clientes
+-- Transforma os usuários 2 e 3 em clientes
+INSERT INTO `clientes` (`clientes_id`, `clientes_usuarios_id`, `clientes_endereco`, `clientes_cidade_id`) VALUES
+(1, 2, 'Rua GO, 123', 1),
+(2, 3, 'Avenida Ju, 124', 2);
+
+-- DADOS PARA A TABELA: funcionarios
+-- Transforma o usuário 1 em funcionário
+INSERT INTO `funcionarios` (`funcionarios_id`, `funcionarios_usuarios_id`, `funcionarios_cargo`, `funcionarios_salario`) VALUES
+(1, 1, 'Entregador', '2200.50');
+
+-- DADOS PARA A TABELA: produtos
+INSERT INTO `produtos` (`produtos_id`, `produtos_nome`, `produtos_descricao`, `produtos_preco_custo`, `produtos_preco_venda`, `produtos_categorias_id`) VALUES
+(1, 'Pizza Mussarela', 'Deliciosa pizza de mussarela com molho de tomate fresco.', 20.00, 45.50, 1),
+(2, 'X-Burger Clássico', 'Hambúrguer de carne, queijo, alface e tomate no pão com gergelim.', 12.00, 25.00, 2),
+(3, 'Refrigerante Lata', 'Lata de 350ml.', 2.50, 5.00, 3);
+
+-- DADOS PARA A TABELA: imgprodutos
+-- Adiciona uma imagem para a pizza
+INSERT INTO `imgprodutos` (`imgprodutos_id`, `imgprodutos_link`, `imgprodutos_descricao`, `imgprodutos_produtos_id`) VALUES
+(1, 'uploads/pizza_mussarela.jpg', 'Foto da Pizza de Mussarela', 1);
+
+-- DADOS PARA A TABELA: estoques
+INSERT INTO `estoques` (`estoques_produtos_id`, `estoques_quantidade`) VALUES
+(1, 50),
+(2, 80),
+(3, 200);
+
+-- DADOS PARA A TABELA: vendas
+-- Cria duas vendas, uma "Realizada" e uma "Aberta"
+INSERT INTO `vendas` (`vendas_id`, `vendas_clientes_id`, `vendas_funcionarios_id`, `vendas_data`, `vendas_status`) VALUES
+(1, 2, 1, '2025-06-18 10:00:00', 'Realizada'),
+(2, 3, NULL, '2025-06-18 11:30:00', 'Aberta');
+
+-- DADOS PARA A TABELA: pedidos
+-- Adiciona itens às vendas
+INSERT INTO `pedidos` (`pedidos_id`, `pedidos_vendas_id`, `pedidos_produtos_id`, `pedidos_quantidade`, `pedidos_preco_unitario`) VALUES
+(1, 1, 1, 1, 45.50), -- 1 Pizza na Venda 1
+(2, 1, 3, 2, 5.00),   -- 2 Refrigerantes na Venda 1
+(3, 2, 2, 2, 25.00);  -- 2 X-Burger na Venda 2
+
+-- DADOS PARA A TABELA: entregas
+-- Cria uma entrega para a Venda 1 que foi "Realizada"
+INSERT INTO `entregas` (`entregas_id`, `entregas_vendas_id`, `entregas_funcionarios_id`, `entregas_data`, `entregas_status`) VALUES
+(1, 1, 1, '2025-06-18 10:30:00', 'Pendente');
+
+-- ATUALIZAÇÃO DOS TOTAIS DE VENDA
+-- Este passo é importante porque a lógica de recálculo está no PHP.
+-- Aqui, nós forçamos a atualização dos totais diretamente no banco após inserir os pedidos.
+UPDATE vendas v
+SET v.vendas_total = (
+    SELECT SUM(p.pedidos_quantidade * p.pedidos_preco_unitario)
+    FROM pedidos p
+    WHERE p.pedidos_vendas_id = v.vendas_id
+)
+WHERE v.vendas_id IN (1, 2);
+
+-- Confirma todas as inserções
+COMMIT;
